@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Baby Pedregal - Estancia Infantil Premium en CDMX</title>
+  <meta name="description" content="La mejor estancia infantil en Pedregal. Entorno seguro, bilingüe y con horario extendido.">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            heading: ['Outfit', 'sans-serif'],
+          },
+          colors: {
+            primary: {
+              DEFAULT: '#E91E63', // Rosa Mexicano
+              50: '#fdf2f6',
+              100: '#fbe5ed',
+              500: '#E91E63',
+              600: '#d11553',
+              900: '#831238',
+            },
+            secondary: {
+              DEFAULT: '#00BCD4', // Azul Turquesa
+              50: '#f0fbfd',
+              100: '#dcf6fa',
+              500: '#00BCD4',
+              600: '#009eb5',
+            },
+            accent: {
+              DEFAULT: '#25D366', // Verde WhatsApp
+              hover: '#20ba59',
+            }
+          },
+          boxShadow: {
+            soft: '0 10px 40px -10px rgba(0,0,0,0.08)',
+            card: '0 4px 20px -2px rgba(0,0,0,0.05)',
+            glow: '0 0 20px rgba(233, 30, 99, 0.3)',
+          },
+          borderRadius: {
+            '4xl': '2rem',
+            '5xl': '3rem',
+          }
+        }
+      }
+    }
+  </script>
+  
+  <style>
+    /* Custom utility classes not covered by Tailwind config easily */
+    .glass-nav {
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+    }
+    .text-balance {
+      text-wrap: balance;
+    }
+    .hero-gradient {
+      background: linear-gradient(180deg, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.7) 100%);
+    }
+    .hide-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .hide-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+
+  <!-- React & ReactDOM (UMD) -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  
+  <!-- Framer Motion (UMD) -->
+  <script crossorigin src="https://unpkg.com/framer-motion@10.16.4/dist/framer-motion.js"></script>
+
+  <!-- Lucide React (UMD) - we can use the feather icons fallback if lucide UMD is tricky but lucide has unpkg -->
+  <script crossorigin src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Babel -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased selection:bg-primary-100 selection:text-primary-900">
+  <div id="root"></div>
+
+  <!-- Entry point for React app -->
+  <script type="text/babel">
+    const { useState, useEffect } = window.React;
+    const { createRoot } = window.ReactDOM;
+    const { motion, AnimatePresence } = window.Motion;
+
+    // Creating Lucide Icon fallback components since UMD might expose them differently. 
+    // Lucide exposes lucide global API. The safest way is to use its built-in createIcons on a div or just dangerouslySetInnerHTML since we control the inputs.
+    const Icon = ({ name, size = 24, className = "" }) => {
+      const iconRef = window.React.useRef(null);
+      
+      window.React.useEffect(() => {
+        if (iconRef.current && window.lucide) {
+          // lucide.createIcons replaces [data-lucide] attributes
+          iconRef.current.innerHTML = `<i data-lucide="${name.replace(/([A-Z])/g, "-$1").toLowerCase().replace(/^-/, '')}" class="${className}" width="${size}" height="${size}"></i>`;
+          window.lucide.createIcons({
+             root: iconRef.current,
+             icons: window.lucide.icons
+          });
+        }
+      }, [name, size, className]);
+
+      return <span ref={iconRef} className="inline-block" style={{ width: size, height: size }} />;
+    };
+
+    // Helper components to map to what we used
+    const Phone = (props) => <Icon name="Phone" {...props} />;
+    const MessageCircle = (props) => <Icon name="MessageCircle" {...props} />;
+    const MapPin = (props) => <Icon name="MapPin" {...props} />;
+    const ShieldCheck = (props) => <Icon name="ShieldCheck" {...props} />;
+    const Apple = (props) => <Icon name="Apple" {...props} />;
+    const BookOpen = (props) => <Icon name="BookOpen" {...props} />;
+    const Globe = (props) => <Icon name="Globe" {...props} />;
+    const ChevronDown = (props) => <Icon name="ChevronDown" {...props} />;
+
+
+    // IMAGES CONFIGURATION
+    // Assigning the uploaded files to specific roles. 
+    // Since names are generic, we do an educated distribution. The user can easily swap these names here.
+    const IMAGES = {
+      logo: './images/Captura de pantalla 2026-03-09 160154.png',
+      heroBg: './images/Captura de pantalla 2026-03-09 160216.png', // Fallback to a nice image for facade
+      map: './images/Captura de pantalla 2026-03-09 160557.png', // Usually maps are taken at the end
+      gallery: [
+        './images/Captura de pantalla 2026-03-09 160224.png',
+        './images/Captura de pantalla 2026-03-09 160232.png',
+        './images/Captura de pantalla 2026-03-09 160241.png',
+        './images/Captura de pantalla 2026-03-09 160250.png',
+        './images/Captura de pantalla 2026-03-09 160259.png',
+        './images/Captura de pantalla 2026-03-09 160307.png',
+        './images/Captura de pantalla 2026-03-09 160317.png',
+        './images/Captura de pantalla 2026-03-09 160327.png',
+        './images/Captura de pantalla 2026-03-09 160349.png',
+        './images/Captura de pantalla 2026-03-09 160457.png',
+      ]
+    };
+
+    const WHATSAPP_LINK = "https://wa.me/525621746160?text=Hola%20Baby%20Pedregal%2C%20vi%20su%20p%C3%A1gina%20web%20y%20me%20gustar%C3%ADa%20recibir%20m%C3%A1s%20informaci%C3%B3n%20sobre%20las%20inscripciones%20y%20agendar%20una%20visita.%20Gracias.";
+    const PHONE_LINK = "tel:5621746160";
+
+    // --- COMPONENTS ---
+
+    const Navbar = () => {
+      const [scrolled, setScrolled] = useState(false);
+
+      useEffect(() => {
+        const handleScroll = () => setScrolled(window.scrollY > 20);
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+      }, []);
+
+      return (
+        <motion.nav 
+          initial={{ y: -100 }}
+          animate={{ y: 0 }}
+          className={`fixed top-0 w-full z-50 transition-all duration-300 ${scrolled ? 'glass-nav py-3' : 'bg-transparent py-5'}`}
+        >
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-full overflow-hidden bg-white shadow-card border-2 border-white">
+                <img src={IMAGES.logo} alt="Baby Pedregal Logo" className="w-full h-full object-cover" />
+              </div>
+              <span className={`font-heading font-bold text-xl tracking-tight ${scrolled ? 'text-slate-800' : 'text-white drop-shadow-md'}`}>
+                Baby Pedregal
+              </span>
+            </div>
+            
+            <a 
+              href={WHATSAPP_LINK}
+              className="hidden sm:flex items-center gap-2 bg-primary text-white px-6 py-2.5 rounded-full font-medium hover:bg-primary-600 transition-colors shadow-glow"
+            >
+              <span>Contacto</span>
+            </a>
+          </div>
+        </motion.nav>
+      );
+    };
+
+    const Hero = () => {
+      return (
+        <section className="relative h-[90vh] min-h-[600px] flex items-center justify-center pt-20 overflow-hidden">
+          {/* Background Image */}
+          <div className="absolute inset-0 z-0">
+            <img 
+              src={IMAGES.heroBg} 
+              alt="Fachada Baby Pedregal" 
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 hero-gradient"></div>
+          </div>
+
+          <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center text-center mt-10">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+              className="max-w-3xl"
+            >
+              <span className="inline-block py-1 px-3 rounded-full bg-white/20 backdrop-blur-md text-white border border-white/30 text-sm font-medium mb-6">
+                Estancia Infantil Premium
+              </span>
+              <h1 className="text-4xl sm:text-5xl md:text-6xl font-heading font-bold text-white leading-tight mb-6 text-balance drop-shadow-lg">
+                El mejor comienzo para tu bebé en el <span className="text-primary-100 italic">corazón de Pedregal</span>
+              </h1>
+              <p className="text-lg sm:text-xl text-slate-100 mb-10 max-w-2xl mx-auto font-medium text-balance drop-shadow-md">
+                Estancia infantil segura, bilingüe y con horario extendido hasta las 7:00 p.m. El cuidado que merecen, la tranquilidad que necesitas.
+              </p>
+              
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full px-4 sm:px-0">
+                <a 
+                  href={WHATSAPP_LINK} 
+                  className="w-full sm:w-auto flex items-center justify-center gap-2 bg-accent text-white px-8 py-4 rounded-full font-semibold text-lg hover:bg-accent-hover transition-transform hover:scale-105 shadow-soft"
+                >
+                  <MessageCircle size={22} className="fill-white" />
+                  Escríbenos por WhatsApp
+                </a>
+                <a 
+                  href={PHONE_LINK} 
+                  className="w-full sm:w-auto flex items-center justify-center gap-2 bg-white text-slate-800 px-8 py-4 rounded-full font-semibold text-lg hover:bg-slate-50 transition-transform hover:scale-105 shadow-soft"
+                >
+                  <Phone size={22} />
+                  Llamar ahora
+                </a>
+              </div>
+            </motion.div>
+          </div>
+          
+          {/* Curved Divider at the bottom */}
+          <div className="absolute bottom-0 left-0 w-full overflow-hidden leading-none z-20">
+            <svg viewBox="0 0 1200 120" preserveAspectRatio="none" className="block w-full h-12 sm:h-20" style={{ fill: '#f8fafc' }}>
+              <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V120H0V0C50.62,24.49,111.45,43.27,185,50.81,257.6,58.35,310.29,66.6,321.39,56.44Z"></path>
+            </svg>
+          </div>
+        </section>
+      );
+    };
+
+    const ValueProposition = () => {
+      const pillars = [
+        {
+          icon: <ShieldCheck size={32} className="text-secondary" />,
+          title: "Seguridad y Monitoreo",
+          desc: "Áreas diseñadas exclusivamente para niños con monitoreo constante. Tu tranquilidad es nuestra prioridad."
+        },
+        {
+          icon: <Apple size={32} className="text-primary" />,
+          title: "Nutrición Balanceada",
+          desc: "Ofrecemos desayuno, comida y colación diseñados por expertos para el óptimo desarrollo de tu pequeño."
+        },
+        {
+          icon: <BookOpen size={32} className="text-secondary" />,
+          title: "Pedagogía Activa",
+          desc: "Estimulación temprana y desarrollo psicomotriz a través del juego y actividades guiadas."
+        },
+        {
+          icon: <Globe size={32} className="text-accent" />,
+          title: "Inmersión Bilingüe",
+          desc: "Introducción natural al inglés a través de canciones, rutinas y juegos divertidos todos los días."
+        }
+      ];
+
+      return (
+        <section className="py-24 bg-white relative overflow-hidden">
+          <div className="absolute top-0 left-0 w-64 h-64 bg-primary-50 rounded-full mix-blend-multiply filter blur-3xl opacity-50 -translate-x-1/2 -translate-y-1/2"></div>
+          <div className="absolute bottom-0 right-0 w-64 h-64 bg-secondary-50 rounded-full mix-blend-multiply filter blur-3xl opacity-50 translate-x-1/2 translate-y-1/2"></div>
+          
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div className="text-center mb-16">
+              <span className="text-primary font-bold tracking-wider uppercase text-sm mb-2 block">Propuesta de Valor</span>
+              <h2 className="text-3xl md:text-4xl font-heading font-bold text-slate-800">
+                Crecimiento Integral
+              </h2>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
+              {pillars.map((pillar, idx) => (
+                <motion.div 
+                  key={idx}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-100px" }}
+                  transition={{ duration: 0.5, delay: idx * 0.1 }}
+                  className="bg-slate-50 rounded-4xl p-8 hover:shadow-card transition-shadow border border-slate-100/50"
+                >
+                  <div className="w-16 h-16 rounded-2xl bg-white shadow-soft flex items-center justify-center mb-6">
+                    {pillar.icon}
+                  </div>
+                  <h3 className="text-xl font-heading font-bold text-slate-800 mb-3">{pillar.title}</h3>
+                  <p className="text-slate-600 leading-relaxed text-balance">{pillar.desc}</p>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+      );
+    };
+
+    const Gallery = () => {
+      return (
+        <section className="py-24 bg-slate-50 overflow-hidden">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-16">
+              <h2 className="text-3xl md:text-4xl font-heading font-bold text-slate-800 mb-4">
+                Nuestras Instalaciones
+              </h2>
+              <p className="text-slate-600 max-w-2xl mx-auto">
+                Espacios diseñados con amor y cuidado, pensados para inspirar, proteger y enseñar a los más pequeños en cada etapa.
+              </p>
+            </div>
+
+            {/* Bento Grid Layout for Gallery - Using 6 images optimally */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 auto-rows-[250px]">
+              {/* Main feature image - spanning 2 cols */}
+              <motion.div 
+                 whileHover={{ scale: 1.02 }}
+                 className="md:col-span-2 md:row-span-2 rounded-3xl overflow-hidden shadow-soft relative group cursor-pointer"
+              >
+                 <img src={IMAGES.gallery[0]} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" alt="Salones Interiores" />
+                 <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+              </motion.div>
+              
+              <motion.div whileHover={{ scale: 1.02 }} className="rounded-3xl overflow-hidden shadow-soft relative group cursor-pointer">
+                 <img src={IMAGES.gallery[1]} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" alt="Área de Juegos" />
+              </motion.div>
+              
+              <motion.div whileHover={{ scale: 1.02 }} className="rounded-3xl overflow-hidden shadow-soft relative group cursor-pointer">
+                 <img src={IMAGES.gallery[2]} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" alt="Mesitas de Trabajo" />
+              </motion.div>
+
+              <motion.div whileHover={{ scale: 1.02 }} className="rounded-3xl overflow-hidden shadow-soft relative group cursor-pointer">
+                 <img src={IMAGES.gallery[3]} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" alt="Interiores" />
+              </motion.div>
+              
+              <motion.div whileHover={{ scale: 1.02 }} className="md:col-span-2 rounded-3xl overflow-hidden shadow-soft relative group cursor-pointer">
+                 <img src={IMAGES.gallery[4]} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" alt="Instalaciones Generales" />
+              </motion.div>
+            </div>
+          </div>
+        </section>
+      );
+    };
+
+    const FAQItem = ({ question, answer }) => {
+      const [isOpen, setIsOpen] = useState(false);
+
+      return (
+        <div className="border-b border-slate-200 py-5">
+          <button 
+            onClick={() => setIsOpen(!isOpen)}
+            className="flex justify-between items-center w-full text-left focus:outline-none group"
+          >
+            <h3 className="text-lg font-heading font-semibold text-slate-800 group-hover:text-primary transition-colors pr-6">{question}</h3>
+            <motion.div animate={{ rotate: isOpen ? 180 : 0 }} className="text-slate-400 group-hover:text-primary flex-shrink-0">
+              <ChevronDown size={20} />
+            </motion.div>
+          </button>
+          <AnimatePresence>
+            {isOpen && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: "auto", opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.3 }}
+                className="overflow-hidden"
+              >
+                <p className="pt-4 text-slate-600 leading-relaxed text-balance">
+                  {answer}
+                </p>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      );
+    };
+
+    const FAQ = () => {
+      const faqs = [
+        { q: "¿Qué edades reciben?", a: "Recibimos desde 45 días de nacidos hasta 4 años de edad, con espacios y cuidados específicos para cada etapa de desarrollo." },
+        { q: "¿Cuáles son sus horarios?", a: "Tenemos un horario extendido diseñado para padres trabajadores, de lunes a viernes de 7:30 a.m. a 7:00 p.m." },
+        { q: "¿Dónde están ubicados?", a: "Nos encontramos en Cto. Fuentes del Pedregal 804, Tlalpan, CDMX. Una zona segura y accesible en el sur de la ciudad." }
+      ];
+
+      return (
+        <section className="py-24 bg-white">
+          <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl md:text-4xl font-heading font-bold text-slate-800">
+                Preguntas Frecuentes
+              </h2>
+            </div>
+            <div className="bg-slate-50 p-8 sm:p-10 rounded-4xl border border-slate-100 shadow-sm">
+              {faqs.map((faq, idx) => (
+                <FAQItem key={idx} question={faq.q} answer={faq.a} />
+              ))}
+            </div>
+          </div>
+        </section>
+      );
+    };
+
+    const Footer = () => {
+      return (
+        <footer className="bg-slate-900 text-slate-300 relative pb-20 md:pb-0">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
+              {/* Brand & Info */}
+              <div>
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-12 h-12 rounded-full overflow-hidden bg-white p-1">
+                    <img src={IMAGES.logo} className="w-full h-full object-cover rounded-full" alt="Baby Pedregal Logo" />
+                  </div>
+                  <span className="font-heading font-bold text-2xl text-white">Baby Pedregal</span>
+                </div>
+                <p className="text-slate-400 mb-8 max-w-sm">
+                  La estancia infantil premium que combina seguridad, calidez y excelencia pedagógica para el primer capítulo de vida de tu bebé.
+                </p>
+                <div className="space-y-4">
+                  <a href={PHONE_LINK} className="flex items-center gap-3 hover:text-white transition-colors">
+                    <div className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center shrink-0">
+                      <Phone size={18} className="text-primary-500" />
+                    </div>
+                    <span>56 2174 6160</span>
+                  </a>
+                  <a href={WHATSAPP_LINK} className="flex items-center gap-3 hover:text-white transition-colors">
+                    <div className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center shrink-0">
+                      <MessageCircle size={18} className="text-accent" />
+                    </div>
+                    <span>Escríbenos por WhatsApp</span>
+                  </a>
+                  <div className="flex items-start gap-3">
+                    <div className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center shrink-0">
+                      <MapPin size={18} className="text-secondary-500" />
+                    </div>
+                    <span className="leading-relaxed">Cto. Fuentes del Pedregal 804,<br/>Tlalpan, CDMX</span>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Map Image */}
+              <div className="lg:col-span-2 rounded-3xl overflow-hidden shadow-lg h-64 md:h-full min-h-[250px] relative group">
+                <img src={IMAGES.map} alt="Ubicación Baby Pedregal Mapa" className="w-full h-full object-cover" />
+                <div className="absolute inset-0 bg-slate-900/10 group-hover:bg-transparent transition-colors"></div>
+                <a href="https://maps.google.com/?q=Cto.+Fuentes+del+Pedregal+804,+Tlalpan,+CDMX" target="_blank" rel="noopener noreferrer" className="absolute bottom-4 right-4 bg-white text-slate-900 px-4 py-2 rounded-full font-medium text-sm flex items-center gap-2 shadow-lg hover:scale-105 transition-transform">
+                  <MapPin size={16} className="text-primary-500" />
+                  Ver en Google Maps
+                </a>
+              </div>
+            </div>
+
+            <div className="border-t border-slate-800 mt-16 pt-8 flex flex-col md:flex-row justify-between items-center text-sm text-slate-500 gap-4 text-center md:text-left">
+              <p>© {new Date().getFullYear()} Baby Pedregal. Todos los derechos reservados.</p>
+              <p>Tus datos son tratados exclusivamente para informes y visitas. Derechos ARCO al 56 2174 6160.</p>
+            </div>
+          </div>
+        </footer>
+      );
+    };
+
+    const StickyBottomBar = () => {
+      return (
+        <div className="fixed bottom-0 left-0 w-full z-50 md:hidden bg-white/95 backdrop-blur-md shadow-[0_-4px_20px_-5px_rgba(0,0,0,0.1)] py-3 px-4 flex gap-3 pb-safe border-t border-slate-100">
+          <a 
+            href={PHONE_LINK}
+            className="flex-1 bg-secondary text-white font-semibold rounded-2xl py-3.5 flex items-center justify-center gap-2 active:scale-95 transition-transform"
+          >
+            <Phone size={20} className="fill-white" />
+            Llamar
+          </a>
+          <a 
+            href={WHATSAPP_LINK}
+            className="flex-1 bg-accent text-white font-semibold rounded-2xl py-3.5 flex items-center justify-center gap-2 active:scale-95 transition-transform"
+          >
+            <MessageCircle size={20} className="fill-white" />
+            WhatsApp
+          </a>
+        </div>
+      );
+    };
+
+    const Main = () => {
+      return (
+        <div className="flex flex-col min-h-screen bg-white">
+          <Navbar />
+          <Hero />
+          <ValueProposition />
+          <Gallery />
+          <FAQ />
+          <Footer />
+          <StickyBottomBar />
+        </div>
+      );
+    };
+
+    const root = createRoot(document.getElementById('root'));
+    root.render(<Main />);
+  </script>
+</body>
+</html>
