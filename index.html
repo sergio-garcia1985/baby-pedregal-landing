@@ -128,15 +128,19 @@
     const BookOpen = (props) => <Icon name="BookOpen" {...props} />;
     const Globe = (props) => <Icon name="Globe" {...props} />;
     const ChevronDown = (props) => <Icon name="ChevronDown" {...props} />;
-
+    const Menu = (props) => <Icon name="Menu" {...props} />;
+    const X = (props) => <Icon name="X" {...props} />;
+    const Construction = (props) => <Icon name="BriefcaseBusiness" {...props} />; // Using a valid lucide name, briefcase or hardhat. Let's use Pickaxe or HardHat, "HardHat" usually is better for construction. Let's use 'HardHat'.
+    const HardHat = (props) => <Icon name="HardHat" {...props} />;
+    const Instagram = (props) => <Icon name="Instagram" {...props} />;
+    const Facebook = (props) => <Icon name="Facebook" {...props} />;
+    const Calendar = (props) => <Icon name="CalendarHeart" {...props} />;
 
     // IMAGES CONFIGURATION
-    // Assigning the uploaded files to specific roles. 
-    // Since names are generic, we do an educated distribution. The user can easily swap these names here.
     const IMAGES = {
-      logo: './images/Captura de pantalla 2026-03-09 160154.png',
-      heroBg: './images/Captura de pantalla 2026-03-09 160216.png', // Fallback to a nice image for facade
-      map: './images/Captura de pantalla 2026-03-09 160557.png', // Usually maps are taken at the end
+      logo: './images/logo.png',
+      heroBg: './images/Captura de pantalla 2026-03-09 160216.png', 
+      map: './images/Captura de pantalla 2026-03-09 160557.png', 
       gallery: [
         './images/Captura de pantalla 2026-03-09 160224.png',
         './images/Captura de pantalla 2026-03-09 160232.png',
@@ -156,8 +160,240 @@
 
     // --- COMPONENTS ---
 
+    const ConstructionModal = ({ isOpen, onClose }) => {
+      return (
+        <AnimatePresence>
+          {isOpen && (
+            <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+              {/* Backdrop */}
+              <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={onClose}
+                className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"
+              />
+              
+              {/* Modal Container */}
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                transition={{ type: "spring", damping: 25, stiffness: 300 }}
+                className="relative bg-white w-full max-w-sm rounded-[2rem] p-8 sm:p-10 text-center shadow-2xl z-10 overflow-hidden"
+              >
+                {/* Decorative background blob */}
+                <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-bl-full -z-10" />
+                <div className="absolute bottom-0 left-0 w-24 h-24 bg-secondary/5 rounded-tr-full -z-10" />
+
+                {/* Animated Loop Icon */}
+                <div className="w-20 h-20 mx-auto bg-primary-50 rounded-2xl flex items-center justify-center mb-6 shadow-inner border border-primary-100">
+                  <motion.div
+                    animate={{ rotate: [-10, 10, -10] }}
+                    transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
+                  >
+                    <HardHat size={40} className="text-primary" />
+                  </motion.div>
+                </div>
+
+                <h3 className="text-2xl font-heading font-bold text-slate-800 mb-3">
+                  Próximamente
+                </h3>
+                
+                <p className="text-slate-600 mb-8 leading-relaxed text-balance">
+                  Estamos creciendo para cuidar mejor de los tuyos. Nuestra bolsa de trabajo estará disponible muy pronto.
+                </p>
+
+                <button 
+                  onClick={onClose}
+                  className="w-full bg-primary hover:bg-primary-600 text-white font-semibold py-3.5 rounded-full transition-colors active:scale-[0.98]"
+                >
+                  Entendido
+                </button>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>
+      );
+    }
+
+    const EventModal = ({ isOpen, onClose }) => {
+      return (
+        <AnimatePresence>
+          {isOpen && (
+            <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+              {/* Backdrop */}
+              <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={onClose}
+                className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"
+              />
+              
+              {/* Modal Container */}
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                transition={{ type: "spring", damping: 25, stiffness: 300 }}
+                className="relative bg-white w-full max-w-sm rounded-[2rem] p-8 sm:p-10 text-center shadow-2xl z-10 overflow-hidden"
+              >
+                {/* Decorative background blob */}
+                <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-bl-full -z-10" />
+                <div className="absolute bottom-0 left-0 w-24 h-24 bg-pink-100 rounded-tr-full -z-10" />
+
+                {/* Animated Loop Icon */}
+                <div className="w-20 h-20 mx-auto bg-primary-50 rounded-2xl flex items-center justify-center mb-6 shadow-inner border border-primary-100">
+                  <motion.div
+                    animate={{ scale: [1, 1.1, 1] }}
+                    transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
+                  >
+                    <Calendar size={40} className="text-primary" />
+                  </motion.div>
+                </div>
+
+                <h3 className="text-2xl font-heading font-bold text-slate-800 mb-3">
+                  Calendario de Eventos
+                </h3>
+                
+                <p className="text-slate-600 mb-8 leading-relaxed text-balance">
+                  ¡Queremos compartir cada momento contigo! Muy pronto podrás consultar aquí nuestra agenda de eventos mensuales, festivales y talleres para padres.
+                </p>
+
+                <button 
+                  onClick={onClose}
+                  className="w-full bg-primary hover:bg-primary-600 text-white font-semibold py-3.5 rounded-full transition-colors active:scale-[0.98]"
+                >
+                  ¡Excelente!
+                </button>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>
+      );
+    }
+
+    const Sidebar = ({ isOpen, setIsOpen, onOpenModal, onOpenEventModal }) => {
+      const links = [
+        { label: "Inicio", id: "hero" },
+        { label: "Servicios", id: "servicios" },
+        { label: "Instalaciones", id: "instalaciones" },
+        { label: "Preguntas", id: "faq" },
+        { label: "Comunidad", id: "comunidad" },
+        { label: "Dirección", id: "direccion" }
+      ];
+
+      const scrollToSection = (id) => {
+        setIsOpen(false);
+        setTimeout(() => {
+          const element = document.getElementById(id);
+          if (element) {
+            window.scrollTo({
+              top: element.offsetTop - 80, // Offset for navbar
+              behavior: "smooth"
+            });
+          }
+        }, 300); // Wait for sidebar exit animation
+      };
+
+      const handleWorkWithUs = () => {
+        setIsOpen(false);
+        setTimeout(() => {
+          onOpenModal(true);
+        }, 300);
+      };
+
+      const handleOpenCalendar = () => {
+        setIsOpen(false);
+        setTimeout(() => {
+          onOpenEventModal(true);
+        }, 300);
+      };
+
+      return (
+        <AnimatePresence>
+          {isOpen && (
+            <>
+              {/* Overlay */}
+              <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setIsOpen(false)}
+                className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[60]"
+              />
+
+              {/* Sidebar Panel */}
+              <motion.div 
+                initial={{ x: "-100%" }}
+                animate={{ x: 0 }}
+                exit={{ x: "-100%" }}
+                transition={{ type: "spring", damping: 25, stiffness: 200 }}
+                className="fixed top-0 left-0 w-[85%] sm:w-[400px] h-full bg-primary z-[70] shadow-2xl flex flex-col pt-24 px-8 pb-10 overflow-y-auto"
+              >
+                <button 
+                  onClick={() => setIsOpen(false)}
+                  className="absolute top-6 right-6 w-10 h-10 bg-white/10 rounded-full flex items-center justify-center text-white hover:bg-white/20 transition-colors"
+                >
+                  <X size={24} />
+                </button>
+
+                <div className="flex flex-col space-y-8 mt-10">
+                  {links.map((link, idx) => (
+                    <button 
+                      key={idx}
+                      onClick={() => scrollToSection(link.id)}
+                      className="text-left text-white/90 hover:text-white font-heading font-bold text-3xl sm:text-4xl transition-colors tracking-wide"
+                    >
+                      {link.label}
+                    </button>
+                  ))}
+                  
+                  <div className="pt-8 border-t border-white/20 flex flex-col gap-6">
+                    <button 
+                      onClick={handleOpenCalendar}
+                      className="text-left flex items-center gap-3 text-white/60 hover:text-white/90 font-heading font-medium text-xl sm:text-2xl transition-colors"
+                    >
+                      <Calendar size={24} />
+                      Eventos
+                    </button>
+                    <button 
+                      onClick={handleWorkWithUs}
+                      className="text-left flex items-center gap-3 text-white/60 hover:text-white/90 font-heading font-medium text-xl sm:text-2xl transition-colors"
+                    >
+                      <HardHat size={24} />
+                      Bolsa de trabajo
+                    </button>
+                  </div>
+                </div>
+
+                <div className="mt-auto pt-12 space-y-4">
+                  <a href={WHATSAPP_LINK} className="flex items-center gap-3 text-white/90 hover:text-white">
+                    <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center shrink-0">
+                      <MessageCircle size={18} />
+                    </div>
+                    <span className="font-medium">Escríbenos por WhatsApp</span>
+                  </a>
+                  <a href={PHONE_LINK} className="flex items-center gap-3 text-white/90 hover:text-white">
+                    <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center shrink-0">
+                      <Phone size={18} />
+                    </div>
+                    <span className="font-medium">56 2174 6160</span>
+                  </a>
+                </div>
+              </motion.div>
+            </>
+          )}
+        </AnimatePresence>
+      );
+    };
+
     const Navbar = () => {
       const [scrolled, setScrolled] = useState(false);
+      const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+      const [isModalOpen, setIsModalOpen] = useState(false);
+      const [isEventModalOpen, setIsEventModalOpen] = useState(false);
 
       useEffect(() => {
         const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -166,35 +402,51 @@
       }, []);
 
       return (
-        <motion.nav 
-          initial={{ y: -100 }}
-          animate={{ y: 0 }}
-          className={`fixed top-0 w-full z-50 transition-all duration-300 ${scrolled ? 'glass-nav py-3' : 'bg-transparent py-5'}`}
-        >
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-full overflow-hidden bg-white shadow-card border-2 border-white">
-                <img src={IMAGES.logo} alt="Baby Pedregal Logo" className="w-full h-full object-cover" />
+        <React.Fragment>
+          <motion.nav 
+            initial={{ y: -100 }}
+            animate={{ y: 0 }}
+            className={`fixed top-0 w-full z-50 transition-all duration-300 ${scrolled ? 'glass-nav py-3' : 'bg-transparent py-5'}`}
+          >
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center">
+              {/* Hamburger Menu - Left Side */}
+              <button 
+                onClick={() => setIsSidebarOpen(true)}
+                className="w-12 h-12 flex items-center justify-center rounded-full bg-white shadow-soft text-primary hover:scale-105 active:scale-95 transition-transform"
+                title="Abrir menú"
+              >
+                <Menu size={24} />
+              </button>
+
+              <div className="flex items-center gap-3 ml-4">
+                <div className="w-12 h-12 rounded-full overflow-hidden bg-white shadow-card border-2 border-white">
+                  <img src={IMAGES.logo} alt="Baby Pedregal Logo" className="w-full h-full object-cover" />
+                </div>
+                <span className={`font-heading font-bold text-xl tracking-tight ${scrolled ? 'text-slate-800' : 'text-white drop-shadow-md'}`}>
+                  Baby Pedregal
+                </span>
               </div>
-              <span className={`font-heading font-bold text-xl tracking-tight ${scrolled ? 'text-slate-800' : 'text-white drop-shadow-md'}`}>
-                Baby Pedregal
-              </span>
+              
+              <div className="flex-1"></div>
+
+              <a 
+                href={WHATSAPP_LINK}
+                className="hidden sm:flex items-center gap-2 bg-primary text-white px-6 py-2.5 rounded-full font-medium hover:bg-primary-600 transition-colors shadow-glow"
+              >
+                <span>Contacto</span>
+              </a>
             </div>
-            
-            <a 
-              href={WHATSAPP_LINK}
-              className="hidden sm:flex items-center gap-2 bg-primary text-white px-6 py-2.5 rounded-full font-medium hover:bg-primary-600 transition-colors shadow-glow"
-            >
-              <span>Contacto</span>
-            </a>
-          </div>
-        </motion.nav>
+          </motion.nav>
+          <Sidebar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} onOpenModal={setIsModalOpen} onOpenEventModal={setIsEventModalOpen} />
+          <ConstructionModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+          <EventModal isOpen={isEventModalOpen} onClose={() => setIsEventModalOpen(false)} />
+        </React.Fragment>
       );
     };
 
     const Hero = () => {
       return (
-        <section className="relative h-[90vh] min-h-[600px] flex items-center justify-center pt-20 overflow-hidden">
+        <section id="hero" className="relative h-[90vh] min-h-[600px] flex items-center justify-center pt-20 overflow-hidden">
           {/* Background Image */}
           <div className="absolute inset-0 z-0">
             <img 
@@ -215,8 +467,9 @@
               <span className="inline-block py-1 px-3 rounded-full bg-white/20 backdrop-blur-md text-white border border-white/30 text-sm font-medium mb-6">
                 Estancia Infantil Premium
               </span>
-              <h1 className="text-4xl sm:text-5xl md:text-6xl font-heading font-bold text-white leading-tight mb-6 text-balance drop-shadow-lg">
-                El mejor comienzo para tu bebé en el <span className="text-primary-100 italic">corazón de Pedregal</span>
+              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-serif italic font-light text-white mb-6 leading-[1.2] drop-shadow-lg tracking-wide text-balance">
+                El mejor comienzo para tu bebé <br />
+                en el corazón de Fuentes del Pedregal
               </h1>
               <p className="text-lg sm:text-xl text-slate-100 mb-10 max-w-2xl mx-auto font-medium text-balance drop-shadow-md">
                 Estancia infantil segura, bilingüe y con horario extendido hasta las 7:00 p.m. El cuidado que merecen, la tranquilidad que necesitas.
@@ -276,7 +529,7 @@
       ];
 
       return (
-        <section className="py-24 bg-white relative overflow-hidden">
+        <section id="servicios" className="py-24 bg-white relative overflow-hidden">
           <div className="absolute top-0 left-0 w-64 h-64 bg-primary-50 rounded-full mix-blend-multiply filter blur-3xl opacity-50 -translate-x-1/2 -translate-y-1/2"></div>
           <div className="absolute bottom-0 right-0 w-64 h-64 bg-secondary-50 rounded-full mix-blend-multiply filter blur-3xl opacity-50 translate-x-1/2 translate-y-1/2"></div>
           
@@ -313,7 +566,7 @@
 
     const Gallery = () => {
       return (
-        <section className="py-24 bg-slate-50 overflow-hidden">
+        <section id="instalaciones" className="py-24 bg-slate-50 overflow-hidden">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-16">
               <h2 className="text-3xl md:text-4xl font-heading font-bold text-slate-800 mb-4">
@@ -392,12 +645,12 @@
     const FAQ = () => {
       const faqs = [
         { q: "¿Qué edades reciben?", a: "Recibimos desde 45 días de nacidos hasta 4 años de edad, con espacios y cuidados específicos para cada etapa de desarrollo." },
-        { q: "¿Cuáles son sus horarios?", a: "Tenemos un horario extendido diseñado para padres trabajadores, de lunes a viernes de 7:30 a.m. a 7:00 p.m." },
+        { q: "¿Cuáles son sus horarios?", a: "Tenemos un horario extendido diseñado para padres trabajadores, de lunes a viernes de 7:00 a.m. a 7:00 p.m." },
         { q: "¿Dónde están ubicados?", a: "Nos encontramos en Cto. Fuentes del Pedregal 804, Tlalpan, CDMX. Una zona segura y accesible en el sur de la ciudad." }
       ];
 
       return (
-        <section className="py-24 bg-white">
+        <section id="faq" className="py-24 bg-white">
           <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12">
               <h2 className="text-3xl md:text-4xl font-heading font-bold text-slate-800">
@@ -416,7 +669,7 @@
 
     const Footer = () => {
       return (
-        <footer className="bg-slate-900 text-slate-300 relative pb-20 md:pb-0">
+        <footer id="direccion" className="bg-slate-900 text-slate-300 relative pb-20 md:pb-0">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
               {/* Brand & Info */}
@@ -493,6 +746,62 @@
       );
     };
 
+    const Community = () => {
+      const socialLinks = [
+        {
+          name: "Instagram",
+          href: "https://www.instagram.com/babypedregalbaby",
+          icon: <Instagram size={36} className="text-pink-500" />,
+          desc: "Actividades diarias y salones en tiempo real",
+          color: "hover:bg-pink-50/50 hover:border-pink-200"
+        },
+        {
+          name: "Facebook",
+          href: "https://www.facebook.com/babypedregal",
+          icon: <Facebook size={36} className="text-blue-600" />,
+          desc: "Eventos, avisos y comunidad de padres",
+          color: "hover:bg-blue-50/50 hover:border-blue-200"
+        }
+      ];
+
+      return (
+        <section id="comunidad" className="py-24 relative overflow-hidden bg-slate-50/50">
+          <div className="absolute top-0 right-0 w-96 h-96 bg-primary-50 rounded-full mix-blend-multiply filter blur-3xl opacity-30 translate-x-1/2 -translate-y-1/2"></div>
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+             <div className="text-center mb-16">
+              <span className="text-secondary font-bold tracking-wider uppercase text-sm mb-2 block">Conoce nuestro día a día</span>
+              <h2 className="text-3xl md:text-4xl font-heading font-bold text-slate-800 mb-4">
+                Nuestra Comunidad
+              </h2>
+            </div>
+            
+            <div className="flex flex-col md:flex-row justify-center items-center md:items-stretch gap-6 lg:gap-10">
+              {socialLinks.map((link, idx) => (
+                <a
+                  key={idx}
+                  href={link.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={`group relative flex md:flex-col items-center gap-6 md:gap-5 p-6 md:p-8 w-full md:w-72 rounded-[2.5rem] bg-white/70 backdrop-blur-xl border border-white shadow-soft transition-all duration-300 transform hover:-translate-y-2 ${link.color}`}
+                >
+                  <div className="w-20 h-20 rounded-2xl bg-white shadow-sm flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-300 border border-slate-50">
+                    {link.icon}
+                  </div>
+                  <div className="md:text-center flex-1">
+                    <h3 className="font-heading font-bold text-slate-800 text-xl mb-2">{link.name}</h3>
+                    <p className="text-sm text-slate-500 leading-relaxed text-balance">{link.desc}</p>
+                  </div>
+                  
+                  {/* Subtle hover gleam effect */}
+                  <div className="absolute inset-0 rounded-[2.5rem] bg-gradient-to-br from-white/40 to-transparent opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity"></div>
+                </a>
+              ))}
+            </div>
+          </div>
+        </section>
+      );
+    };
+
     const Main = () => {
       return (
         <div className="flex flex-col min-h-screen bg-white">
@@ -501,6 +810,7 @@
           <ValueProposition />
           <Gallery />
           <FAQ />
+          <Community />
           <Footer />
           <StickyBottomBar />
         </div>
