@@ -135,10 +135,13 @@
     const Instagram = (props) => <Icon name="Instagram" {...props} />;
     const Facebook = (props) => <Icon name="Facebook" {...props} />;
     const Calendar = (props) => <Icon name="CalendarHeart" {...props} />;
+    const Megaphone = (props) => <Icon name="Megaphone" {...props} />;
 
     // IMAGES CONFIGURATION
     const IMAGES = {
       logo: './images/logo.png',
+      notice: './images/circular_marzo_pro.png',
+      semanaSanta: './images/circular_semana_santa.jpg',
       heroBg: './images/Captura de pantalla 2026-03-09 160216.png', 
       map: './images/Captura de pantalla 2026-03-09 160557.png', 
       gallery: [
@@ -159,6 +162,47 @@
     const PHONE_LINK = "tel:5621746160";
 
     // --- COMPONENTS ---
+
+    const NoticeModal = ({ isOpen, onClose, imageUrl }) => {
+      return (
+        <AnimatePresence>
+          {isOpen && (
+            <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+              {/* Backdrop */}
+              <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={onClose}
+                className="absolute inset-0 bg-slate-900/80 backdrop-blur-sm"
+              />
+              
+              {/* Modal Container */}
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                transition={{ type: "spring", damping: 25, stiffness: 300 }}
+                className="relative bg-white w-full max-w-lg md:max-w-2xl lg:max-w-3xl rounded-[2rem] md:rounded-[3rem] p-2 shadow-2xl z-10 overflow-hidden"
+              >
+                {/* Close Button */}
+                <button 
+                  onClick={onClose}
+                  className="absolute top-4 right-4 md:top-6 md:right-6 w-10 h-10 bg-black/10 hover:bg-black/20 text-slate-800 rounded-full flex items-center justify-center transition-colors z-20 backdrop-blur-md"
+                >
+                  <X size={20} />
+                </button>
+
+                {/* Notice Image */}
+                <div className="overflow-hidden rounded-[1.8rem] md:rounded-[2.8rem]">
+                   <img src={imageUrl} alt="Aviso Circular" className="w-full h-auto max-h-[85vh] object-contain block" />
+                </div>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>
+      );
+    }
 
     const ConstructionModal = ({ isOpen, onClose }) => {
       return (
@@ -274,7 +318,10 @@
       );
     }
 
-    const Sidebar = ({ isOpen, setIsOpen, onOpenModal, onOpenEventModal }) => {
+    const Sidebar = ({ isOpen, setIsOpen, onOpenModal, onOpenEventModal, onOpenNoticeModal, hasUnreadNotice, clearUnread, onOpenSemanaSantaModal, hasUnreadSemanaSanta, clearUnreadSemanaSanta }) => {
+      const [isEventsOpen, setIsEventsOpen] = useState(false);
+      const [isAvisosOpen, setIsAvisosOpen] = useState(false);
+
       const links = [
         { label: "Inicio", id: "hero" },
         { label: "Servicios", id: "servicios" },
@@ -308,6 +355,22 @@
         setIsOpen(false);
         setTimeout(() => {
           onOpenEventModal(true);
+        }, 300);
+      };
+
+      const handleOpenNotice = () => {
+        setIsOpen(false);
+        clearUnread();
+        setTimeout(() => {
+          onOpenNoticeModal(true);
+        }, 300);
+      };
+
+      const handleOpenSemanaSanta = () => {
+        setIsOpen(false);
+        clearUnreadSemanaSanta();
+        setTimeout(() => {
+          onOpenSemanaSantaModal(true);
         }, 300);
       };
 
@@ -351,16 +414,102 @@
                   ))}
                   
                   <div className="pt-8 border-t border-white/20 flex flex-col gap-6">
-                    <button 
-                      onClick={handleOpenCalendar}
-                      className="text-left flex items-center gap-3 text-white/60 hover:text-white/90 font-heading font-medium text-xl sm:text-2xl transition-colors"
-                    >
-                      <Calendar size={24} />
-                      Eventos
-                    </button>
+                    <div className="flex flex-col gap-4">
+                      {/* Events Accordion Toggle */}
+                      <button 
+                        onClick={() => setIsEventsOpen(!isEventsOpen)}
+                        className="text-left flex justify-between items-center w-full text-white/60 hover:text-white/90 font-heading font-medium text-xl sm:text-2xl transition-colors"
+                      >
+                        <div className="flex items-center gap-3">
+                          <Calendar size={24} />
+                          Eventos
+                          {hasUnreadNotice && !isEventsOpen && (
+                            <span className="w-2.5 h-2.5 bg-red-500 rounded-full ml-1" />
+                          )}
+                        </div>
+                        <motion.div animate={{ rotate: isEventsOpen ? 180 : 0 }}>
+                          <ChevronDown size={20} />
+                        </motion.div>
+                      </button>
+
+                      {/* Sub-items */}
+                      <AnimatePresence>
+                        {isEventsOpen && (
+                          <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: "auto", opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            transition={{ duration: 0.2 }}
+                            className="flex flex-col gap-5 pl-10 border-l-2 border-white/10 ml-3 overflow-hidden"
+                          >
+                            <button 
+                              onClick={handleOpenNotice}
+                              className="text-left flex items-center text-lg sm:text-xl font-heading font-medium text-white/80 hover:text-white transition-colors py-2"
+                            >
+                              <span>Aviso: Circular de Marzo 🌸</span>
+                              {hasUnreadNotice && (
+                                <span className="ml-3 px-2 py-0.5 bg-red-500 text-white text-xs font-bold rounded-md flex shrink-0 shadow-sm leading-none items-center">
+                                  Nuevo
+                                </span>
+                              )}
+                            </button>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
+
+                    <div className="flex flex-col gap-4">
+                      {/* Avisos Accordion Toggle */}
+                      <button 
+                        onClick={() => setIsAvisosOpen(!isAvisosOpen)}
+                        className="text-left flex justify-between items-center text-white/60 hover:text-white/90 font-heading font-medium text-xl sm:text-2xl pt-2 border-t border-white/10 transition-colors"
+                      >
+                        <div className="flex items-center gap-3">
+                          <Megaphone size={24} />
+                          Avisos
+                        </div>
+                        <div className="flex items-center gap-2">
+                            {hasUnreadSemanaSanta && !isAvisosOpen && (
+                              <span className="relative flex h-3 w-3 mr-1">
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                                <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+                              </span>
+                            )}
+                            <motion.div animate={{ rotate: isAvisosOpen ? 180 : 0 }}>
+                              <ChevronDown size={20} />
+                            </motion.div>
+                        </div>
+                      </button>
+
+                      {/* Sub-items */}
+                      <AnimatePresence>
+                        {isAvisosOpen && (
+                          <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: "auto", opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            transition={{ duration: 0.2 }}
+                            className="flex flex-col gap-5 pl-10 border-l-2 border-white/10 ml-3 overflow-hidden"
+                          >
+                            <button 
+                              onClick={handleOpenSemanaSanta}
+                              className="text-left flex items-center text-lg sm:text-xl font-heading font-medium text-white/80 hover:text-white transition-colors py-2"
+                            >
+                              <span>Vacaciones Semana Santa</span>
+                              {hasUnreadSemanaSanta && (
+                                <span className="ml-3 px-2 py-0.5 bg-red-500 text-white text-xs font-bold rounded-md flex shrink-0 shadow-sm leading-none items-center">
+                                  Nuevo
+                                </span>
+                              )}
+                            </button>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
+
                     <button 
                       onClick={handleWorkWithUs}
-                      className="text-left flex items-center gap-3 text-white/60 hover:text-white/90 font-heading font-medium text-xl sm:text-2xl transition-colors"
+                      className="text-left flex items-center gap-3 text-white/60 hover:text-white/90 font-heading font-medium text-xl sm:text-2xl pt-2 border-t border-white/10 transition-colors"
                     >
                       <HardHat size={24} />
                       Bolsa de trabajo
@@ -394,6 +543,10 @@
       const [isSidebarOpen, setIsSidebarOpen] = useState(false);
       const [isModalOpen, setIsModalOpen] = useState(false);
       const [isEventModalOpen, setIsEventModalOpen] = useState(false);
+      const [isNoticeModalOpen, setIsNoticeModalOpen] = useState(false);
+      const [hasUnreadNotice, setHasUnreadNotice] = useState(true);
+      const [isSemanaSantaModalOpen, setIsSemanaSantaModalOpen] = useState(false);
+      const [hasUnreadSemanaSanta, setHasUnreadSemanaSanta] = useState(true);
 
       useEffect(() => {
         const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -437,9 +590,22 @@
               </a>
             </div>
           </motion.nav>
-          <Sidebar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} onOpenModal={setIsModalOpen} onOpenEventModal={setIsEventModalOpen} />
+          <Sidebar 
+             isOpen={isSidebarOpen} 
+             setIsOpen={setIsSidebarOpen} 
+             onOpenModal={setIsModalOpen} 
+             onOpenEventModal={setIsEventModalOpen} 
+             onOpenNoticeModal={setIsNoticeModalOpen}
+             hasUnreadNotice={hasUnreadNotice}
+             clearUnread={() => setHasUnreadNotice(false)}
+             onOpenSemanaSantaModal={setIsSemanaSantaModalOpen}
+             hasUnreadSemanaSanta={hasUnreadSemanaSanta}
+             clearUnreadSemanaSanta={() => setHasUnreadSemanaSanta(false)}
+          />
           <ConstructionModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
           <EventModal isOpen={isEventModalOpen} onClose={() => setIsEventModalOpen(false)} />
+          <NoticeModal isOpen={isNoticeModalOpen} onClose={() => setIsNoticeModalOpen(false)} imageUrl={IMAGES.notice} />
+          <NoticeModal isOpen={isSemanaSantaModalOpen} onClose={() => setIsSemanaSantaModalOpen(false)} imageUrl={IMAGES.semanaSanta} />
         </React.Fragment>
       );
     };
